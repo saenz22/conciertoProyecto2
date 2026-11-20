@@ -108,6 +108,7 @@ class Aplicacion:
         )
 
     def construir_widgets(self) -> None:
+        """Construye los paneles, campos, botones y etiquetas de la ventana."""
         contenedor = ttk.Frame(self.raiz, style="App.TFrame", padding=18)
         contenedor.grid(row=0, column=0, sticky="nsew")
         contenedor.columnconfigure(0, weight=1)
@@ -309,6 +310,7 @@ class Aplicacion:
         )
 
     def al_solucionar(self) -> None:
+        """Lee la entrada, la valida y genera el código MiniZinc correspondiente."""
         self.mostrar_codigo("")
         texto = self.entrada.get("1.0", "end-1c")
         try:
@@ -332,6 +334,12 @@ class Aplicacion:
         self.mostrar_codigo(codigo)
 
     def mostrar_resumen_entrada(self, instancia) -> None:
+        """Recibe una instancia y muestra sus ciudades en la tabla.
+
+        Recibe: instancia validada.
+        Hace: limpia la tabla y agrega una fila por ciudad.
+        Devuelve: None.
+        """
         self.tabla.delete(*self.tabla.get_children())
         for ciudad in instancia.ciudades:
             self.tabla.insert(
@@ -345,6 +353,12 @@ class Aplicacion:
         )
 
     def mostrar_codigo(self, codigo: str) -> None:
+        """Muestra el código generado en el área de salida.
+
+        Recibe: texto MiniZinc.
+        Hace: reemplaza el contenido del campo de salida.
+        Devuelve: None.
+        """
         self.salida.configure(state="normal")
         self.salida.delete("1.0", "end")
         if codigo:
@@ -354,6 +368,7 @@ class Aplicacion:
             self._actualizar_estado("Modelo MiniZinc generado.", EXITO)
 
     def mostrar_errores(self, errores: list) -> None:
+        """Muestra los errores de entrada y vacía el resultado anterior."""
         self.mostrar_codigo("")
         self.tabla.delete(*self.tabla.get_children())
         detalle = "\n".join(str(error) for error in errores)
@@ -364,6 +379,7 @@ class Aplicacion:
         messagebox.showerror("No se pudo generar el modelo", detalle, parent=self.raiz)
 
     def copiar_al_portapapeles(self) -> None:
+        """Copia el código MiniZinc generado al portapapeles del sistema."""
         codigo = self.salida.get("1.0", "end-1c")
         if not codigo:
             self._actualizar_estado("No hay código para copiar.", ERROR)
@@ -373,7 +389,8 @@ class Aplicacion:
         self._actualizar_estado("Código copiado al portapapeles.", EXITO)
 
     def cargar_ejemplo(self) -> None:
-        ejemplo = "12\n5\nCentro 2 3\nNorte 6 10\nSur 9 2\nEste 11 7\nOeste 1 11"
+        """Carga en el área de entrada el ejemplo indicado en el enunciado."""
+        ejemplo = "12\n5\nPalmira 2 3\nCali 10 2\nBuga 11 0\nTulua 0 3\nRioFrio 1 2"
         self.entrada.delete("1.0", "end")
         self.entrada.insert("1.0", ejemplo)
         self.mostrar_codigo("")
