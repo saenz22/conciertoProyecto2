@@ -1,6 +1,11 @@
+from pathlib import Path
+import re
+
 from entrada import Instancia
 
-RUTA_PLANTILLA = "plantillas/modelo.mzn.tpl"
+RUTA_PLANTILLA = str(
+    Path(__file__).resolve().parent / "plantillas" / "modelo.mzn.tpl"
+)
 
 
 def cargar_plantilla(ruta: str = RUTA_PLANTILLA) -> str:
@@ -12,7 +17,15 @@ def cargar_plantilla(ruta: str = RUTA_PLANTILLA) -> str:
     Returns:
         El texto de la plantilla, con sus marcadores sin reemplazar.
     """
-    raise NotImplementedError
+    try:
+        plantilla = Path(ruta).read_text(encoding="utf-8")
+    except OSError as error:
+        raise OSError(
+            f"No se pudo leer la plantilla MiniZinc en '{ruta}'."
+        ) from error
+    if not plantilla.strip():
+        raise ValueError(f"La plantilla MiniZinc en '{ruta}' está vacía.")
+    return plantilla
 
 
 def formatear_arreglo(valores: list) -> str:
@@ -26,7 +39,16 @@ def formatear_arreglo(valores: list) -> str:
     Returns:
         Texto del arreglo, listo para insertar en el modelo.
     """
-    raise NotImplementedError
+    return "[" + ", ".join(str(valor) for valor in valores) + "]"
+
+
+def formatear_arreglo_texto(valores: list[str]) -> str:
+    """Convierte textos en un arreglo de cadenas con sintaxis MiniZinc."""
+    elementos = []
+    for valor in valores:
+        escapado = valor.replace("\\", "\\\\").replace('"', '\\"')
+        elementos.append(f'"{escapado}"')
+    return "[" + ", ".join(elementos) + "]"
 
 
 def generar_minizinc(instancia: Instancia, plantilla: str) -> str:
@@ -46,4 +68,28 @@ def generar_minizinc(instancia: Instancia, plantilla: str) -> str:
     Raises:
         ValueError: si queda algún marcador sin reemplazar.
     """
-    raise NotImplementedError
+    if not plantilla.strip():
+        raise ValueError("La plantilla MiniZinc está vacía.")
+
+    x_ciudades = [ciudad.x for ciudad in instancia.ciudades]
+    y_ciudades = [ciudad.y for ciudad in instancia.ciudades]
+    nombres = [ciudad.nombre for ciudad in instancia.ciudades]
+
+    reemplazos = {
+        "__N__": str(instancia.n),
+        "__M__": str(instancia.m),
+        "__CX__": formatear_arreglo(x_ciudades),
+        "__CY__": formatear_arreglo(y_ciudades),
+        "__NOMBRES__": formatear_arreglo_texto(nombres),
+    }
+
+    codigo = plantilla
+    for marcador, valor in reemplazos.items():
+        codigo = codigo.replace(marcador, valor)
+
+    marcadores = sorted(set(re.findall(r"__[A-Z]+__", codigo)))
+    if marcadores:
+        raise ValueError(
+            "Quedaron marcadores sin reemplazar: " + ", ".join(marcadores)
+        )
+    return codigo
