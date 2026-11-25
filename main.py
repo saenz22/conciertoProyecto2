@@ -1,7 +1,7 @@
 import tkinter as tk
 from gui import Aplicacion
 
-
+# Ejecuta la aplicación
 def main() -> None:
     """Crea la ventana principal y arranca el ciclo de eventos."""
     raiz = tk.Tk()
