@@ -5,17 +5,17 @@ from dataclasses import dataclass
 
 
 class ErrorEntrada(Exception):
-    """Se lanza cuando el texto de entrada no tiene el formato esperado."""
+    # Se lanza cuando el texto de entrada no tiene el formato esperado.
+    pass
 
 @dataclass(frozen=True)
 class Ciudad:
-    """Una ciudad ubicada en una intersección entera del plano.
-
-    Atributos:
-        nombre: identificador de la ciudad.
-        x: posición en el eje X (entero).
-        y: posición en el eje Y (entero).
-    """
+    # Una ciudad ubicada en una intersección entera del plano.
+    #
+    # Atributos:
+    #     nombre: identificador de la ciudad.
+    #     x: posición en el eje X (entero).
+    #     y: posición en el eje Y (entero).
     nombre: str
     x: int
     y: int
@@ -23,43 +23,41 @@ class Ciudad:
 
 @dataclass(frozen=True)
 class Instancia:
-    """Una entrada completa del problema.
-
-    Atributos:
-        n: lado del cuadrado que representa al departamento (en km).
-        ciudades: tupla de Ciudad, en el orden en que se leyeron.
-    """
+    # Una entrada completa del problema.
+    #
+    # Atributos:
+    #     n: lado del cuadrado que representa al departamento (en km).
+    #     ciudades: tupla de Ciudad, en el orden en que se leyeron.
     n: int
     ciudades: tuple
 
     @property
     def m(self) -> int:
-        """Número de ciudades."""
+        # Número de ciudades.
         return len(self.ciudades)
 
 
 def parsear_entrada(texto: str) -> Instancia:
-    """Convierte el contenido del TextArea en una Instancia.
-
-    Formato esperado:
-        línea 1: entero N
-        línea 2: entero M
-        siguientes M líneas: 'nombre x y'
-
-    Args:
-        texto: contenido completo del TextArea.
-
-    Returns:
-        La Instancia leída (todavía sin validar reglas de negocio).
-
-    Raises:
-        ErrorEntrada: si faltan líneas, algún número no es entero, o una
-            línea de ciudad no tiene exactamente 3 campos. El mensaje debe
-            indicar el número de línea problemática.
-
-    Las líneas en blanco se ignoran, conservando su posición original para
-    los mensajes de error. Los nombres deben ser una sola palabra.
-    """
+    # Convierte el contenido del TextArea en una Instancia.
+    #
+    # Formato esperado:
+    #     línea 1: entero N
+    #     línea 2: entero M
+    #     siguientes M líneas: 'nombre x y'
+    #
+    # Args:
+    #     texto: contenido completo del TextArea.
+    #
+    # Returns:
+    #     La Instancia leída (todavía sin validar reglas de negocio).
+    #
+    # Raises:
+    #     ErrorEntrada: si faltan líneas, algún número no es entero, o una
+    #         línea de ciudad no tiene exactamente 3 campos. El mensaje debe
+    #         indicar el número de línea problemática.
+    #
+    # Las líneas en blanco se ignoran, conservando su posición original para
+    # los mensajes de error. Los nombres deben ser una sola palabra.
     lineas = [
         (numero, contenido.strip())
         for numero, contenido in enumerate(texto.splitlines(), start=1)

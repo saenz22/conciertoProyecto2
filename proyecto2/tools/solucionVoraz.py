@@ -1,16 +1,11 @@
 def resolver_fuerza_bruta(instancia, criterio: str):
-    """Busca el punto óptimo probando todos los (N+1)^2 puntos.
-
-    SOLO para verificar las respuestas de MiniZinc en el informe de
-    pruebas. No se importa desde la aplicación.
-
-    Args:
-        instancia: la Instancia a resolver.
-        criterio: 'minimax', 'rango', 'suma' o 'minimax_rango'.
-
-    Returns:
-        Lista con TODOS los puntos óptimos (x, y), para poder ver empates.
-    """
+    # Evalúa todos los puntos libres del cuadrado usando distancias Manhattan.
+    #
+    # Entrada: instancia con el tamaño del cuadrado y al menos una ciudad.
+    # Criterio: minimax minimiza la distancia máxima, rango minimiza la
+    #            diferencia entre la máxima y la mínima, suma minimiza la suma,
+    #            y minimax_rango usa el rango para desempatar la distancia máxima.
+    # Salida: lista de pares (x, y) óptimos, incluidos los empates.
     criterios_validos = {"minimax", "rango", "suma", "minimax_rango"}
     if criterio not in criterios_validos:
         raise ValueError(

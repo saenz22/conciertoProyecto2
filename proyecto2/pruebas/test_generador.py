@@ -9,10 +9,13 @@ from generador import cargar_plantilla, formatear_arreglo, generar_minizinc
 
 
 class PruebasGenerador(unittest.TestCase):
+    # Pruebas del formato de los datos y de la generación de modelos MiniZinc.
     def test_formatea_arreglo(self) -> None:
+        # Comprueba la representación de una lista de enteros en MiniZinc.
         self.assertEqual(formatear_arreglo([2, 10, 11]), "[2, 10, 11]")
 
     def test_genera_minizinc_completo(self) -> None:
+        # Comprueba que el modelo generado incorpora los datos de la instancia y sustituye los marcadores.
         instancia = Instancia(
             n=12,
             ciudades=(
@@ -28,6 +31,7 @@ class PruebasGenerador(unittest.TestCase):
         self.assertNotIn("__", codigo)
 
     def test_detecta_marcador_sin_reemplazar(self) -> None:
+        # Comprueba que el generador lanza un ValueError si queda un marcador en el modelo.
         instancia = Instancia(n=2, ciudades=(Ciudad("A", 0, 0),))
         with self.assertRaisesRegex(ValueError, "marcadores"):
             generar_minizinc(

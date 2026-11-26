@@ -22,9 +22,12 @@ from validacion import validar
 
 
 class Aplicacion:
-    """Interfaz para interpretar una entrada y generar su modelo MiniZinc."""
+    # Interfaz para interpretar una entrada y generar su modelo MiniZinc.
 
     def __init__(self, raiz: tk.Tk):
+        # Configura la ventana principal y enlaza Ctrl+Enter.
+        #
+        # Entrada: raiz, la ventana Tk que contiene la aplicación.
         self.raiz = raiz
         self.raiz.title("Ubicador de concierto")
         self.raiz.geometry("1000x640")
@@ -35,6 +38,7 @@ class Aplicacion:
         self.raiz.bind("<Control-Return>", self._atajo_solucionar)
 
     def _configurar_estilos(self) -> None:
+        # Configura el tema ttk y los estilos de los controles de la aplicación.
         estilo = ttk.Style(self.raiz)
         estilo.theme_use("clam")
         estilo.configure("App.TFrame", background=FONDO)
@@ -108,6 +112,7 @@ class Aplicacion:
         )
 
     def construir_widgets(self) -> None:
+        # Crea y distribuye los paneles, campos, botones y etiquetas de la ventana.
         contenedor = ttk.Frame(self.raiz, style="App.TFrame", padding=18)
         contenedor.grid(row=0, column=0, sticky="nsew")
         contenedor.columnconfigure(0, weight=1)
@@ -292,6 +297,9 @@ class Aplicacion:
 
     @staticmethod
     def _fuente_mono() -> tuple:
+        # Selecciona una fuente monoespaciada según el sistema operativo.
+        #
+        # Salida: tupla con el nombre de la fuente y su tamaño.
         if sys.platform == "win32":
             return ("Consolas", 10)
         if sys.platform == "darwin":
@@ -300,6 +308,10 @@ class Aplicacion:
 
     @staticmethod
     def _crear_tarjeta(parent) -> tk.Frame:
+        # Crea un marco con el fondo y el borde de una tarjeta.
+        #
+        # Entrada: parent, el widget contenedor.
+        # Salida: el marco tk.Frame creado.
         return tk.Frame(
             parent,
             bg=TARJETA,
@@ -309,6 +321,7 @@ class Aplicacion:
         )
 
     def al_solucionar(self) -> None:
+        # Lee el texto del formulario, lo analiza y valida. Muestra las ciudades y el modelo MiniZinc generado, o los errores encontrados.
         self.mostrar_codigo("")
         texto = self.entrada.get("1.0", "end-1c")
         try:
@@ -332,6 +345,9 @@ class Aplicacion:
         self.mostrar_codigo(codigo)
 
     def mostrar_resumen_entrada(self, instancia) -> None:
+        # Actualiza la tabla de ciudades y el mensaje de estado.
+        #
+        # Entrada: instancia validada con el tamaño del cuadrado y sus ciudades.
         self.tabla.delete(*self.tabla.get_children())
         for ciudad in instancia.ciudades:
             self.tabla.insert(
@@ -345,6 +361,9 @@ class Aplicacion:
         )
 
     def mostrar_codigo(self, codigo: str) -> None:
+        # Reemplaza el contenido del área de salida.
+        #
+        # Entrada: codigo, texto MiniZinc. Una cadena vacía limpia el área.
         self.salida.configure(state="normal")
         self.salida.delete("1.0", "end")
         if codigo:
@@ -354,6 +373,9 @@ class Aplicacion:
             self._actualizar_estado("Modelo MiniZinc generado.", EXITO)
 
     def mostrar_errores(self, errores: list) -> None:
+        # Limpia el resultado anterior y muestra los errores en un cuadro de diálogo.
+        #
+        # Entrada: errores, lista de mensajes u objetos convertibles a texto.
         self.mostrar_codigo("")
         self.tabla.delete(*self.tabla.get_children())
         detalle = "\n".join(str(error) for error in errores)
@@ -364,6 +386,7 @@ class Aplicacion:
         messagebox.showerror("No se pudo generar el modelo", detalle, parent=self.raiz)
 
     def copiar_al_portapapeles(self) -> None:
+        # Copia al portapapeles el código mostrado y actualiza el estado. Si el área está vacía, muestra un aviso.
         codigo = self.salida.get("1.0", "end-1c")
         if not codigo:
             self._actualizar_estado("No hay código para copiar.", ERROR)
@@ -373,6 +396,7 @@ class Aplicacion:
         self._actualizar_estado("Código copiado al portapapeles.", EXITO)
 
     def cargar_ejemplo(self) -> None:
+        # Carga un ejemplo en el formulario y borra el resultado anterior.
         ejemplo = "12\n5\nCentro 2 3\nNorte 6 10\nSur 9 2\nEste 11 7\nOeste 1 11"
         self.entrada.delete("1.0", "end")
         self.entrada.insert("1.0", ejemplo)
@@ -381,14 +405,22 @@ class Aplicacion:
         self._actualizar_estado("Ejemplo cargado.", TEXTO_SECUNDARIO)
 
     def limpiar(self) -> None:
+        # Vacía el formulario, el área de código y la tabla de ciudades, y restablece el estado.
         self.entrada.delete("1.0", "end")
         self.mostrar_codigo("")
         self.tabla.delete(*self.tabla.get_children())
         self._actualizar_estado("Estado: listo", TEXTO_SECUNDARIO)
 
     def _actualizar_estado(self, texto: str, color: str) -> None:
+        # Actualiza el mensaje de estado de la ventana.
+        #
+        # Entrada: texto del mensaje y color de primer plano aceptado por Tkinter.
         self.estado.configure(text=texto, foreground=color)
 
     def _atajo_solucionar(self, _evento=None) -> str:
+        # Ejecuta la generación del modelo al pulsar Ctrl+Enter.
+        #
+        # Entrada: _evento, evento opcional de Tkinter que el método ignora.
+        # Salida: "break", que detiene la propagación del evento.
         self.al_solucionar()
         return "break"

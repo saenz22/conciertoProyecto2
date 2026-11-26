@@ -3,7 +3,7 @@ from gui import Aplicacion
 
 
 def main() -> None:
-    """Crea la ventana principal y arranca el ciclo de eventos."""
+    # Crea la ventana principal y arranca el ciclo de eventos.
     raiz = tk.Tk()
     Aplicacion(raiz)
     raiz.mainloop()

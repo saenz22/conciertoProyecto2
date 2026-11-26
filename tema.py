@@ -1,3 +1,5 @@
+# Paleta de colores de la interfaz, incluidos los estados y el área de código.
+
 FONDO = "#F7F3EE"
 TARJETA = "#FFFFFF"
 PRIMARIO = "#2F5D62"
